@@ -1,65 +1,72 @@
 import React, { useState } from "react";
-import { Card, Container, Form } from "react-bootstrap";
-import SButton from "../../components/Button";
-import TextInputWithLabel from "../../components/TextInputWithLabel";
+import { Card, Container } from "react-bootstrap";
 import axios from "axios";
 import SAlert from "../../components/Alert";
+import { Navigate, useNavigate } from "react-router-dom";
+import { config } from "../../configs";
+import SForm from "./form";
 
-export default function PageSignin() {
+export default function SigninPage() {
+  const token = localStorage.getItem("token");
+
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  const [alert, setAlert] = useState({
+    status: false,
+    message: "",
+    type: "",
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
+
     try {
       const res = await axios.post(
-        "http://localhost:9000/api/v1/cms/auth/signin",
-        {
-          email: form.email,
-          password: form.password,
-        }
+        `${config.api_host_dev}/cms/auth/signin`,
+        form
       );
 
-      console.log(res); 
+      localStorage.setItem("token", res.data.data.token);
+      setIsLoading(false);
+      navigate("/");
     } catch (err) {
-      console.log(err.response.data.msg);
+      setIsLoading(false);
+
+      setAlert({
+        status: true,
+        type: "danger",
+        message: err?.response?.data?.msg ?? "Internal server error",
+      });
     }
   };
 
+  if (token) return <Navigate to="/" replace={true} />;
+
   return (
-    <Container md={12}>
-      <SAlert type="danger" message="test" />
+    <Container md={12} className="my-5">
+      <div className="m-auto" style={{ width: "50%" }}>
+        {alert.status && <SAlert type={alert.type} message={alert.message} />}
+      </div>
       <Card style={{ width: "50%" }} className="m-auto mt-5">
         <Card.Body>
           <Card.Title className="text-center">Form Login</Card.Title>
-          <Form>
-            <TextInputWithLabel
-              label="Email Address"
-              name="email"
-              value={form.email}
-              type="email"
-              placeholder="Enter email"
-              onChange={handleChange}
-            />
-
-            <TextInputWithLabel
-              label="Password"
-              name="password"
-              value={form.password}
-              type="password"
-              placeholder="Enter password"
-              onChange={handleChange}
-            />
-
-            <SButton variant="primary" action={handleSubmit}>
-              Submit
-            </SButton>
-          </Form>
+          <SForm
+            form={form}
+            handleChange={handleChange}
+            isLoading={isLoading}
+            handleSubmit={handleSubmit}
+          />
         </Card.Body>
       </Card>
     </Container>
