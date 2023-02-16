@@ -1,17 +1,16 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { Container } from "react-bootstrap";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SAlert from "../../components/Alert";
 import SBreadCrumb from "../../components/Breadcrumb";
-import SNavbar from "../../components/Navbar";
-import { config } from "../../configs";
+import { setNotif } from "../../redux/notif/actions";
+import { postData } from "../../utils/fetch";
 import CategoriesForm from "./form";
 
 export default function CategoryCreate() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
   });
@@ -30,29 +29,30 @@ export default function CategoryCreate() {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    try {
-      await axios.post(`${config.api_host_dev}/cms/categories`, form, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+    const res = await postData("/cms/categories", form);
+    if (res?.data?.data) {
+      dispatch(
+        setNotif(
+          true,
+          "success",
+          `Berhasil tambah kategori ${res.data.data.name}`
+        )
+      );
       navigate("/categories");
       setIsLoading(false);
-    } catch (err) {
+    } else {
       setIsLoading(false);
       setAlert({
         ...alert,
         status: true,
         type: "danger",
-        message: err.response.data.msg,
+        message: res.response.data.msg,
       });
     }
   };
 
   return (
     <>
-      <SNavbar />
       <Container>
         <SBreadCrumb
           textSecond={"Categories"}

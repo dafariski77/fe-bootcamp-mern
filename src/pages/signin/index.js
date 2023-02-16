@@ -1,27 +1,25 @@
 import React, { useState } from "react";
 import { Card, Container } from "react-bootstrap";
-import axios from "axios";
 import SAlert from "../../components/Alert";
-import { Navigate, useNavigate } from "react-router-dom";
-import { config } from "../../configs";
+import { useNavigate } from "react-router-dom";
 import SForm from "./form";
+import { postData } from "../../utils/fetch";
+import { useDispatch } from "react-redux";
+import { userLogin } from "../../redux/auth/actions";
 
 export default function SigninPage() {
-  const token = localStorage.getItem("token");
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-
   const [alert, setAlert] = useState({
     status: false,
     message: "",
     type: "",
   });
-
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -32,12 +30,9 @@ export default function SigninPage() {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(
-        `${config.api_host_dev}/cms/auth/signin`,
-        form
-      );
+      const res = await postData(`/cms/auth/signin`, form);
 
-      localStorage.setItem("token", res.data.data.token);
+      dispatch(userLogin(res.data.data.token, res.data.data.role));
       setIsLoading(false);
       navigate("/");
     } catch (err) {
@@ -50,8 +45,6 @@ export default function SigninPage() {
       });
     }
   };
-
-  if (token) return <Navigate to="/" replace={true} />;
 
   return (
     <Container md={12} className="my-5">
