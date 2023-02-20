@@ -1,9 +1,8 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
 
-export default function Pagination(props) {
+const Pagination = (props) => {
   const { pages, handlePageClick, page = 1 } = props;
-
   return (
     <ReactPaginate
       previousLabel={"previous"}
@@ -29,4 +28,6 @@ export default function Pagination(props) {
       forcePage={page - 1}
     />
   );
-}
+};
+
+export default Pagination;

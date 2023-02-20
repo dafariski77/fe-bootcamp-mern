@@ -32,7 +32,13 @@ export default function SigninPage() {
     try {
       const res = await postData(`/cms/auth/signin`, form);
 
-      dispatch(userLogin(res.data.data.token, res.data.data.role));
+      dispatch(
+        userLogin(
+          res.data.data.token,
+          res.data.data.role,
+          res.data.data.refreshToken
+        )
+      );
       setIsLoading(false);
       navigate("/");
     } catch (err) {

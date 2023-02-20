@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import {
+  accessAdmins,
   accessCategories,
   accessEvents,
   accessOrders,
+  accessOrganizers,
   accessParticipant,
   accessPayments,
   accessTalents,
@@ -63,6 +65,20 @@ export default function SNavbar() {
             roles={accessPayments.lihat}
           >
             Payment
+          </NavAccess>
+          <NavAccess
+            role={role}
+            roles={accessOrganizers.lihat}
+            action={() => navigate("/organizers")}
+          >
+            Organizers
+          </NavAccess>
+          <NavAccess
+            role={role}
+            roles={accessAdmins.lihat}
+            action={() => navigate("/admins")}
+          >
+            Admin
           </NavAccess>
           <NavAccess
             action={() => navigate("/events")}

@@ -3,7 +3,7 @@ import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import SBreadCrumb from "../../components/Breadcrumb";
 import SButton from "../../components/Button";
-import STable from "../../components/TableWithAction";
+import TableWithAction from "../../components/TableWithAction";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCategories } from "../../redux/categories/actions";
 import { accessCategories } from "../../const/access";
@@ -87,7 +87,7 @@ function Categories() {
         <SAlert type={notif.typeNotif} message={notif.message} />
       )}
 
-      <STable
+      <TableWithAction
         status={categories.status}
         thead={["Nama", "Aksi"]}
         data={categories.data}
